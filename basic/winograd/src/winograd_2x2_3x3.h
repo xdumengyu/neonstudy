@@ -85,5 +85,5 @@ static INLINE void winograd_f2k3_out_transform_inplace(
 	float32x4_t q2 = vcombine_f32(vget_high_f32(q01.val[0]), vdup_n_f32(0)); // (3, 7, 0, 0)
 	float32x4_t q3 = vcombine_f32(vget_high_f32(q01.val[1]), vdup_n_f32(0)); // (4, 8, 0, 0)
 	*d0 = q01.val[0] + q01.val[1] + q2;
-	*d2 = 			   q01.val[1] - q2 + q3;
+	*d1 = 			   q01.val[1] - q2 + q3;
 }
