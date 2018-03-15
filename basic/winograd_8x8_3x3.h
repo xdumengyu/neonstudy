@@ -1,4 +1,5 @@
 #include <arm_neon.h>
+#include "macro.h"
 //  const float ktm[8][3] = {
 //        {   1.0f,     0.0f,     0.0f},
 //        {-2.0f/9,  -2.0f/9,  -2.0f/9},
@@ -9,18 +10,18 @@
 //        {1.0f/45, -1.0f/90, 1.0f/180},
 //        {   0.0f,     0.0f,     1.0f}
 //    };
-static void winograd8x8_3x3_kernel_transform(
+static INLINE void winograd8x8_3x3_kernel_transform(
 		const float32x4_t g0,
 		const float32x4_t g1,
 		const float32x4_t g2,
-		float32x4_t d0,
-		float32x4_t d1,
-		float32x4_t d2,
-		float32x4_t d3,
-		float32x4_t d4,
-		float32x4_t d5,
-		float32x4_t d6,
-		float32x4_t d7
+		float32x4_t __restrict *d0,
+		float32x4_t __restrict *d1,
+		float32x4_t __restrict *d2,
+		float32x4_t __restrict *d3,
+		float32x4_t __restrict *d4,
+		float32x4_t __restrict *d5,
+		float32x4_t __restrict *d6,
+		float32x4_t __restrict *d7
 		)
 {
 	const float32x4_t const_3 = vdupq_n_f32(3.0);
@@ -29,42 +30,42 @@ static void winograd8x8_3x3_kernel_transform(
 	float32x4_t three_g2  = vmulq_f32(g1, const_3);
 	//d1 = ((g0 + g2) - g1) * -2.0/9
 	//d2 = ((g0 + g2) + g1) * -2.0/9
-	d1 = a02 - g1;
-	d2 = a02 + g1;
+	*d1 = a02 - g1;
+	*d2 = a02 + g1;
 
-	float32x4_t d2Ag1 = d2 + g1; //g0 + g2 + 2 * g1
-	float32x4_t d1Sg1 = d1 - g1; //g0 + g2 - 2 * g1
+	float32x4_t d2Ag1 = *d2 + g1; //g0 + g2 + 2 * g1
+	float32x4_t d1Sg1 = *d1 - g1; //g0 + g2 - 2 * g1
 	//d3 = ((g2 * 4 + g0) + 2 * g1) * 1 / 90 = ((g0 + g2 + 2 * g1) + 3 * g2) * 1.0 / 90
 	//d4 = ((g2 * 4 + g0) - 2 * g1) * 1 / 90 = ((g0 + g2 - 2 * g1) + 3 * g2) * 1.0 / 90
 	//d5 = ((g2 + g0 * 4) + 2 * g1) * 1 / 180 = ((g0 + g2 + 2 * g1) + 3 * g0) * 1.0 / 90
 	//d5 = ((g2 + g0 * 4) - 2 * g1) * 1 / 180 = ((g0 + g2 - 2 * g1) + 3 * g0) * 1.0 / 90
-	d3 = d2Ag1 + three_g2;
-	d4 = d1Sg1 + three_g2;
-	d5 = d2Ag1 + three_g0;
-	d6 = d1Sg1 + three_g0;
+	*d3 = d2Ag1 + three_g2;
+	*d4 = d1Sg1 + three_g2;
+	*d5 = d2Ag1 + three_g0;
+	*d6 = d1Sg1 + three_g0;
 
 	float32x4_t rev90 = vdup_n_f32(1.0 / 90);
 	float32x4_t rev180 = vdup_n_f32(1.0 / 180);
 	float32x4_t minus2D9 = vdup_n_f32(-2.0 / 9);
-	d0 = g0;
-	d1 = vmulq_f32(d1, minus2D9);
-	d2 = vmulq_f32(d2, minus2D9);
-	d3 = vmulq_f32(d3, rev90);
-	d4 = vmulq_f32(d4, rev90);
-	d5 = vmulq_f32(d5, rev180);
-	d6 = vmulq_f32(d6, rev180);
-	d7 = g2;
+	*d0 = g0;
+	*d1 = vmulq_f32(*d1, minus2D9);
+	*d2 = vmulq_f32(*d2, minus2D9);
+	*d3 = vmulq_f32(*d3, rev90);
+	*d4 = vmulq_f32(*d4, rev90);
+	*d5 = vmulq_f32(*d5, rev180);
+	*d6 = vmulq_f32(*d6, rev180);
+	*d7 = *g2;
 }
 
-static void winograd8x8_3x3_input_transform_inplace(
-		float32x4_t q0,
-		float32x4_t q1,
-		float32x4_t q2,
-		float32x4_t q3,
-		float32x4_t q4,
-		float32x4_t q5,
-		float32x4_t q6,
-		float32x4_t q7
+static INLINE void winograd8x8_3x3_input_transform_inplace(
+		float32x4_t __restrict *q0,
+		float32x4_t __restrict *q1,
+		float32x4_t __restrict *q2,
+		float32x4_t __restrict *q3,
+		float32x4_t __restrict *q4,
+		float32x4_t __restrict *q5,
+		float32x4_t __restrict *q6,
+		float32x4_t __restrict *q7
 		)
 {
 
@@ -111,38 +112,38 @@ static void winograd8x8_3x3_input_transform_inplace(
 	const float32x4_t const_1_25 = vdupq_n_f32(1.25f);
 	const float32x4_t const_4_25 = vdupq_n_f32(4.25f);
 
-	const float32x4_t q0Sq6 = q0 - q6;
-	const float32x4_t q7Sq1 = q7 - q1;
-	const float32x4_t q2Sq6 = q2 + q6;
-	const float32x4_t q1Sq5 = q1 + q5;
-//	const float32x4_t q2_times_0_25 = vmulq_f32(q2, const_0_25);
-//	const float32x4_t q1_times_0_25 = vmulq_f32(q1, const_0_25);
-	const float32x4_t q4_times_1_25 = vmulq_f32(q4, const_1_25);
-	const float32x4_t q3_times_1_25 = vmulq_f32(q3, const_1_25);
-	float32x4_t wq1 = vmlsq_f32(q2Sq6, q4, const_4_25);
-	float32x4_t wq2 = vmlsq_f32(q1Sq5, q3, const_4_25);
-	float32x4_t wq3 = q6 - q4_times_1_25;
-	float32x4_t wq4 = q5 - q3_times_1_25;
-	float32x4_t wq5 = q2 - q4_times_1_25;
-	float32x4_t wq6 = q1 - q3_times_1_25;
-	wq4 = vmlaq_f32(wq4, q1, const_0_25);
-	wq6 = vmlaq_f32(wq6, q5, const_0_25);
-	wq3 = vmlaq_f32(wq3, q2, const_0_25);
-	wq5 = vmlaq_f32(q6, wq5, vdupq_n_f32(4.0f));
+	const float32x4_t q0Sq6 = *q0 - *q6;
+	const float32x4_t q7Sq1 = *q7 - *q1;
+	const float32x4_t q2Sq6 = *q2 + *q6;
+	const float32x4_t q1Sq5 = *q1 + *q5;
+//	const float32x4_t *q2_times_0_25 = vmulq_f32(*q2, const_0_25);
+//	const float32x4_t *q1_times_0_25 = vmulq_f32(*q1, const_0_25);
+	const float32x4_t q4_times_1_25 = vmulq_f32(*q4, const_1_25);
+	const float32x4_t q3_times_1_25 = vmulq_f32(*q3, const_1_25);
+	float32x4_t wq1 = vmlsq_f32(q2Sq6, *q4, const_4_25);
+	float32x4_t wq2 = vmlsq_f32(q1Sq5, *q3, const_4_25);
+	float32x4_t wq3 = *q6 - q4_times_1_25;
+	float32x4_t wq4 = *q5 - q3_times_1_25;
+	float32x4_t wq5 = *q2 - q4_times_1_25;
+	float32x4_t wq6 = *q1 - q3_times_1_25;
+	wq4 = vmlaq_f32(wq4, *q1, const_0_25);
+	wq6 = vmlaq_f32(wq6, *q5, const_0_25);
+	wq3 = vmlaq_f32(wq3, *q2, const_0_25);
+	wq5 = vmlaq_f32(*q6, wq5, vdupq_n_f32(4.0f));
 
 	const float32x4_t const_2 = vdupq_n_f32(2.0f);
 	wq4 = vmulq_f32(wq4, const_2);
 	wq6 = vmulq_f32(wq6, const_2);
 
 
-	//q0 = q0
-	q1 = wq1 + wq2;
-	q2 = wq1 - wq2;
-	q3 = wq3 + wq4;
-	q4 = wq3 - wq4;
-	q5 = wq5 + wq6;
-	q6 = wq5 - wq6;
-	//q7 = q7
+	//*q0 = *q0
+	*q1 = wq1 + wq2;
+	*q2 = wq1 - wq2;
+	*q3 = wq3 + wq4;
+	*q4 = wq3 - wq4;
+	*q5 = wq5 + wq6;
+	*q6 = wq5 - wq6;
+	//*q7 = *q7
 
 
 }
@@ -157,24 +158,23 @@ static void winograd8x8_3x3_input_transform_inplace(
 //             {0.0f,  1.0f,  -1.0f,  32.0f, -32.0f,   1.0f, -1.0f, 1.0f}
 //         };
 
-#define NNP_INLINE inline __attribute__((__always_inline__))
-static void winograd8x8_3x3_output_transform_inplace(
-		float32x4_t q0,
-		float32x4_t q1,
-		float32x4_t q2,
-		float32x4_t q3,
-		float32x4_t q4,
-		float32x4_t q5,
-		float32x4_t q6,
-		float32x4_t q7
+static INLINE void winograd8x8_3x3_output_transform_inplace(
+		float32x4_t *q0,
+		float32x4_t *q1,
+		float32x4_t *q2,
+		float32x4_t *q3,
+		float32x4_t *q4,
+		float32x4_t *q5,
+		float32x4_t *q6,
+		float32x4_t *q7
 				)
 {
-	const float32x4_t q1Aq2 = q1 + q2;
-	const float32x4_t q1Sq2 = q1 - q2;
-	const float32x4_t q3Aq4 = q3 + q4;
-	const float32x4_t q3Sq4 = q3 - q4;
-	const float32x4_t q5Aq6 = q5 + q6;
-	const float32x4_t q5Sq6 = q5 - q6;
+	const float32x4_t q1Aq2 = *q1 + *q2;
+	const float32x4_t q1Sq2 = *q1 - *q2;
+	const float32x4_t q3Aq4 = *q3 + *q4;
+	const float32x4_t q3Sq4 = *q3 - *q4;
+	const float32x4_t q5Aq6 = *q5 + *q6;
+	const float32x4_t q5Sq6 = *q5 - *q6;
 	/*
 	 * s0 = m0 + (m1 + m2) +      (m3 + m4) + 32 * (m5 + m6)
 	 * s1 =      (m1 - m2) +  2 * (m3 - m4) + 16 * (m5 - m6)
@@ -183,23 +183,23 @@ static void winograd8x8_3x3_output_transform_inplace(
 	 * s4 =      (m1 + m2) + 16 * (m3 + m4) +  2 * (m5 + m6)
 	 * s5 =      (m1 - m2) + 32 * (m3 - m4) +      (m5 - m6) + m7
 	 */
-	q0 = q0 + q1Aq2;
-	q5 = q7 + q1Sq2;
+	*q0 = *q0 + q1Aq2;
+	*q5 = *q7 + q1Sq2;
 	const float32x4_t const_16 = vdupq_n_f32(16);
-	q1 = vmlaq_f32(q1Sq2, q5Sq6, const_16);
-	q4 = vmlaq_f32(q1Aq2, q3Aq4, const_16);
+	*q1 = vmlaq_f32(q1Sq2, q5Sq6, const_16);
+	*q4 = vmlaq_f32(q1Aq2, q3Aq4, const_16);
 	const float32x4_t const_8 = vdupq_n_f32(8);
-	q2 = vmlaq_f32(q1Aq2, q5Aq6, const_8);
-	q3 = vmlaq_f32(q1Sq2, q3Sq4, const_8);
+	*q2 = vmlaq_f32(q1Aq2, q5Aq6, const_8);
+	*q3 = vmlaq_f32(q1Sq2, q3Sq4, const_8);
 	const float32x4_t const_32 = vdupq_n_f32(32);
-	q0 = vmlaq_f32(q0, q5Aq6, const_32);
-	q5 = vmlaq_f32(q5, q3Sq4, const_32);
+	*q0 = vmlaq_f32(*q0, q5Aq6, const_32);
+	*q5 = vmlaq_f32(*q5, q3Sq4, const_32);
 	const float32x4_t const_2 = vdupq_n_f32(2);
-	q1 = vmlaq_f32(q1, q3Sq4, const_2);
-	q4 = vmlaq_f32(q4, q5Aq6, const_2);
+	*q1 = vmlaq_f32(*q1, q3Sq4, const_2);
+	*q4 = vmlaq_f32(*q4, q5Aq6, const_2);
 	const float32x4_t const_4 = vdupq_n_f32(4);
-	q2 = vmlaq_f32(q2, q3Aq4, const_4);
-	q3 = vmlaq_f32(q3, q5Sq6, const_4);
-	q0 = q0 + q3Aq4;
-	q5 = q5 + q5Sq6;
+	*q2 = vmlaq_f32(*q2, q3Aq4, const_4);
+	*q3 = vmlaq_f32(*q3, q5Sq6, const_4);
+	*q0 = *q0 + q3Aq4;
+	*q5 = *q5 + q5Sq6;
 }
