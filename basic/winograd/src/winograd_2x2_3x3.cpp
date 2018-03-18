@@ -8,7 +8,7 @@ void conv3x3s1_winograd(
 				int cols,
 				const float* kernel) 
 {
-	//TODO: copy make border
+	//TODO: copy make border [m,n] => [4k + 2, 4l + 2]
 	// current impl just ignore some point
 	const int row_count = (rows - 2) / 2;
 	const int col_count = (cols - 2) / 2;
