@@ -30,7 +30,7 @@ static INLINE void winograd_f2k3_input_transform_inplace(
 	*q1 = nq1 + nq2;
 	*q2 = nq2 - nq1;
 	*q3 = nq3 - nq1;
-	return 0;
+	return ;
 }
 //kernel 3x3 transform
 //transpoed answer
@@ -71,7 +71,7 @@ static INLINE void winograd_f2k3_kernel_transform_inplace(
 // dot = U .* V
 // AT * trans(AT * dotT) = AT * dot * A = AT * (U .* V) *A
 // input transposed dot
-static INLINE winograd_f2k3_dotout_transform_inplace(
+static INLINE void winograd_f2k3_out_transform_inplace(
 				float32x4_t __restrict *d0,
 				float32x4_t __restrict *d1,
 				float32x4_t __restrict *d2,
