@@ -31,11 +31,11 @@ void conv3x3s1_winograd(
 	vst1q_f32(gt[3], g3);
 	for (int i = 0; i < row_count; ++i)
 	{
-		const float* row_base = src + row_count * 2 * src_stride;
-		float* const dst_base = dst + row_count * 2 * dst_stride;
+		const float* row_base = src + i * 2 * src_stride;
+		float* const dst_base = dst + i * 2 * dst_stride;
 		for (int j = 0; j < col_count; ++j) 
 		{
-			const float *row0 = row_base + col_count * 2;
+			const float *row0 = row_base + j * 2;
 			const float *row1 = row0 + src_stride;
 			const float *row2 = row0 + src_stride * 2;
 			const float *row3 = row0 + src_stride * 3;
@@ -71,10 +71,10 @@ void conv3x3s1_winograd(
 			float ans[2][4];
 			vst1q_f32(ans[0], r0);
 			vst1q_f32(ans[1], r1);
-			dst_base[col_count * 2] = ans[0][0];
-			dst_base[col_count * 2 + 1] = ans[0][1];
-			dst_base[col_count * 2 + dst_stride] = ans[1][0];
-			dst_base[col_count * 2 + dst_stride + 1] = ans[1][1];
+			dst_base[j * 2] = ans[0][0];
+			dst_base[j * 2 + 1] = ans[0][1];
+			dst_base[j * 2 + dst_stride] = ans[1][0];
+			dst_base[j * 2 + dst_stride + 1] = ans[1][1];
 		}
 	}
 	// TODO: copy cut border with copy make border
