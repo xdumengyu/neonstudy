@@ -8,10 +8,10 @@ void conv3x3s1_winograd(
 				int cols,
 				const float* kernel) 
 {
-	//TODO: copy make border [m,n] => [4k + 2, 4l + 2]
+	//TODO: copy make border
 	// current impl just ignore some point
-	const int row_count = (rows - 2) / 2;
-	const int col_count = (cols - 2) / 2;
+	const int row_count = (rows - 4) / 2;
+	const int col_count = (cols - 4) / 2;
 	float gt[4][4];
 	float32x4_t g0 = vld1q_f32(kernel);
 	float32x4_t g1 = vld1q_f32(kernel + 3);
@@ -37,8 +37,8 @@ void conv3x3s1_winograd(
 		{
 			const float *row0 = row_base + col_count * 2;
 			const float *row1 = row0 + src_stride;
-			const float *row2 = row2 + src_stride * 2;
-			const float *row3 = row3 + src_stride * 3;
+			const float *row2 = row0 + src_stride * 2;
+			const float *row3 = row0 + src_stride * 3;
 			//tile
 			float32x4_t r0 = vld1q_f32(row0);
 			float32x4_t r1 = vld1q_f32(row1);
