@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/inc)
 #add debug info
-add_definitions("-Wall -pg")
+add_definitions("-Wall -g")
 PROJECT(winograd_stu)
 SET(SRCS
 	${CMAKE_SOURCE_DIR}/src/winograd_2x2_3x3.cpp)
