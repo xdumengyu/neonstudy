@@ -57,7 +57,7 @@ static INLINE void winograd_f2k3_kernel_transform_inplace(
 	float32x4_t nq0 = vcombine_f32(vget_low_f32(wq01.val[0]), vget_low_f32(wq23.val[0]));
 	float32x4_t nq1 = vcombine_f32(vget_low_f32(wq01.val[1]), vget_low_f32(wq23.val[1]));
 	float32x4_t nq2 = vcombine_f32(vget_high_f32(wq01.val[0]), vget_high_f32(wq23.val[0]));
-	float32x4_t nq3 = vcombine_f32(vget_high_f32(wq01.val[1]), vget_high_f32(wq23.val[1]));
+	//float32x4_t nq3 = vcombine_f32(vget_high_f32(wq01.val[1]), vget_high_f32(wq23.val[1]));
 	q0_add_q2 = nq0 + nq2;
 	//transposed result
 	*q0 = nq0;
