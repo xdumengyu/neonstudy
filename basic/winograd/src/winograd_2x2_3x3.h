@@ -8,10 +8,10 @@
 //transpoed answer
 //G*trans(G*g) = G*gT*GT
 static INLINE void winograd_f2k3_input_transform_inplace(
-				float32x4_t __restrict *q0,
-				float32x4_t __restrict *q1,
-				float32x4_t __restrict *q2,
-				float32x4_t __restrict *q3
+				float32x4_t * __restrict q0,
+				float32x4_t * __restrict q1,
+				float32x4_t * __restrict q2,
+				float32x4_t * __restrict q3
 				) 
 {
 	float32x4_t wq0 = *q0 - *q2;
@@ -36,11 +36,11 @@ static INLINE void winograd_f2k3_input_transform_inplace(
 //transpoed answer
 //BT*trans(BT*d) = BT * dT *B
 static INLINE void winograd_f2k3_kernel_transform_inplace(
-				float32x4_t __restrict *q0,
-				float32x4_t __restrict *q1,
-				float32x4_t __restrict *q2,
+				float32x4_t * __restrict q0,
+				float32x4_t * __restrict q1,
+				float32x4_t * __restrict q2,
 				//q4 for output
-				float32x4_t __restrict *q3
+				float32x4_t * __restrict q3
 				)
 {
 	float32x4_t q0_add_q2 = *q0 + *q2;
@@ -72,10 +72,10 @@ static INLINE void winograd_f2k3_kernel_transform_inplace(
 // AT * trans(AT * dotT) = AT * dot * A = AT * (U .* V) *A
 // input transposed dot
 static INLINE void winograd_f2k3_out_transform_inplace(
-				float32x4_t __restrict *d0,
-				float32x4_t __restrict *d1,
-				float32x4_t __restrict *d2,
-				float32x4_t __restrict *d3
+				float32x4_t * __restrict d0,
+				float32x4_t * __restrict d1,
+				float32x4_t * __restrict d2,
+				float32x4_t * __restrict d3
 				) 
 {
 	float32x4_t wq0 = *d0 + *d1 + *d2;
