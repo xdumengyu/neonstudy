@@ -5,7 +5,7 @@ if(CMAKE_TOOLCHAIN_FILE)
 		set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Installation Directory")
 endif()
 #add debug info
-add_definitions("-Wall -g -std=c++11")
+add_definitions("-Wall -O3  -std=c++11")
 #set OpenCV_DIR env
 #set(ANDROID_ABI "arm64-v8a")
 #set(OpenCV_DIR "/home/mintmy/Downloads/OpenCV-android-sdk/sdk/native/jni")
@@ -14,7 +14,7 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 PROJECT(winograd_stu)
 SET(SRCS
 	${CMAKE_SOURCE_DIR}/src/winograd_2x2_3x3.cpp)
