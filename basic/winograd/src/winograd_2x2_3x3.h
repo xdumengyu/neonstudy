@@ -48,7 +48,7 @@ static INLINE void winograd_f2k3_kernel_transform_inplace(
 	float32x4_t wq0 = *q0;
 	float32x4_t wq1 = q0_add_q2 + *q1;
 	float32x4_t wq2 = q0_add_q2 - *q1;
-	float32x4_t wq3 = *q1;
+	float32x4_t wq3 = *q2;
 	wq1 = vmulq_f32(wq1, const_0_5);
 	wq2 = vmulq_f32(wq2, const_0_5);
 	//transpose
@@ -63,7 +63,7 @@ static INLINE void winograd_f2k3_kernel_transform_inplace(
 	*q0 = nq0;
 	*q1 = q0_add_q2 + nq1;
 	*q2 = q0_add_q2 - nq1;
-	*q3 = nq1;
+	*q3 = nq2;
 	*q1 = vmulq_f32(*q1, const_0_5);
 	*q2 = vmulq_f32(*q2, const_0_5);
 	return ;	
