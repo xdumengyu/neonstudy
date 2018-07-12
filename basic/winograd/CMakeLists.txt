@@ -14,7 +14,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 set(CMAKE_BUILD_TYPE Release)
 PROJECT(winograd_stu)
 SET(SRCS
-		${CMAKE_CURRENT_SOURCE_DIR}/src/winograd_2x2_3x3.cpp)
+		${CMAKE_CURRENT_SOURCE_DIR}/src/winograd_2x2_3x3.cpp
+		${CMAKE_CURRENT_SOURCE_DIR}/src/cvtColor.cpp)
 ADD_LIBRARY(winograd_f2k3 STATIC ${SRCS})
 SET(TESTS
 		${CMAKE_CURRENT_SOURCE_DIR}/test/test_2x2_3x3.cpp)

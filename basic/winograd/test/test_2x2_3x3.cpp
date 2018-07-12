@@ -56,6 +56,9 @@ int fakeTest()
 	}
 	return 0;
 }
+namespace ncv{
+void rgb2gray( const unsigned char * srcarr, unsigned char* dstarr, int nElement);
+}
 int main(int argc, char **argv)
 {
 	Mat srcImage = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
@@ -107,6 +110,16 @@ int main(int argc, char **argv)
 	cout<<static_cast<double>(dur.count()) / ITER<<" ms\n";
 	dstFloat.convertTo(dstImage, CV_8UC1);
 	imwrite("neon_out.png", dstImage);
+	cv::Mat colorImage = imread(argv[1]);
+	cv::Mat gray = cv::Mat(colorImage.rows, colorImage.cols, CV_8UC1);
+	int nElements = colorImage.rows * colorImage.cols;
+	auto color_start = system_clock::now();
+	ncv::rgb2gray((const unsigned char *)(colorImage.data), (unsigned char *)(gray.data), nElements);
+	auto color_end = system_clock::now();
+	auto color_dur = duration_cast<milliseconds>(color_end - color_start);
+	cout<<"color duration version cost:\n";
+	cout<<static_cast<double>(color_dur.count()) / ITER<<" ms\n";
+	
 	
 	return 0;
 }
